@@ -2,6 +2,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
+
+// Our project headers
+#include "TransformChar.hpp"
 
 // For std::isalpha and std::isupper
 #include <cctype>
@@ -61,71 +65,19 @@ bool processCommandLine(const std::vector<std::string>& cmdLineArgs, bool& helpR
   return true;
 }
 
-// Function to run transliteration code
-std::string transformChar(const char inputChar) {
-    std::string inputText{""};
-    // Uppercase alphabetic characters
-    if (std::isalpha(inputChar)) {
-      inputText += std::toupper(inputChar);
-      //continue;
-    }
-
-    // Transliterate digits to English words
-    switch (inputChar) {
-      case '0':
-	inputText += "ZERO";
-	break;
-      case '1':
-	inputText += "ONE";
-	break;
-      case '2':
-	inputText += "TWO";
-	break;
-      case '3':
-	inputText += "THREE";
-	break;
-      case '4':
-	inputText += "FOUR";
-	break;
-      case '5':
-	inputText += "FIVE";
-	break;
-      case '6':
-	inputText += "SIX";
-	break;
-      case '7':
-	inputText += "SEVEN";
-	break;
-      case '8':
-	inputText += "EIGHT";
-	break;
-      case '9':
-	inputText += "NINE";
-	break;
-    }
-
-    // If the character isn't alphabetic or numeric, DONT add it.
-    // Our ciphers can only operate on alphabetic characters.
-
-    return inputText;
-  
-}
-
 // Main function of the mpags-cipher program
 int main(int argc, char* argv[])
 {
   // Convert the command-line arguments into a more easily usable form
   const std::vector<std::string> cmdLineArgs {argv, argv+argc};
 
-  
-
-  // Options that might be set by the command-line arguments
+  // Options that might be set by the command-line arguments (these can be changed when the processCommandLine function is run.
   bool helpRequested {false};
   bool versionRequested {false};
   std::string inputFile {""};
   std::string outputFile {""};
 
-  // Process command line arguments and if the function returns false, exit program.
+  // Process command line arguments and if the function returns false, exit program. Note this line both runs the function and checks the output.
   if(!processCommandLine(cmdLineArgs, helpRequested, versionRequested, inputFile, outputFile)) {return 1;}
 
   // Handle help, if requested
@@ -158,32 +110,53 @@ int main(int argc, char* argv[])
   char inputChar {'x'};
   std::string inputText {""};
 
-  // Read in user input from stdin/file
-  // Warn that input file option not yet implemented
-  if (!inputFile.empty()) {
-    std::cout << "[warning] input from file ('"
-              << inputFile
-              << "') not implemented yet, using stdin\n";
+  // Check file was read correctly, if not use keyboard input. 
+  std::ifstream in_file{inputFile};
+  if (!in_file.good()) {
+    std::cout<<"File not read. Using keyboard input instead."<<std::endl;
+    while(std::cin >> inputChar) {
+      inputText += transformChar(inputChar);
+    }
+  }
+  else {
+    std::cout << "File read correctly." << std::endl;
+    while(in_file >> inputChar) {
+      inputText += transformChar(inputChar);
+    }
   }
 
+  // Read in user input from stdin/file
+  //if (!inputFile.empty()) {
+  //while(std::cin >> inputChar) {
+  //  inputText += transformChar(inputChar);
+  //}
+  //}
+  //  else {
+  //while(in_file >> inputChar) {
+  //  inputText += transformChar(inputChar);
+  //}
+  //  }
+
+  // Check file was read correctly
+  //std::ifstream in_file{inputFile};
+  //if (!in_file.good()) {std::cout<<"File not read."<<std::endl;return 1;}
+  
   // Loop over each character from user input
   // (until Return then CTRL-D (EOF) pressed)
-  while(std::cin >> inputChar)
-  {
-    inputText += transformChar(inputChar);
-  }
-
-  // Output the transliterated text
-  // Warn that output file option not yet implemented
-  if (!outputFile.empty()) {
-    std::cout << "[warning] output to file ('"
-              << outputFile
-              << "') not implemented yet, using stdout\n";
-  }
-
+  //  while(std::cin >> inputChar)
+  // if (!inputFile.empty())
+  
+  
+  // Output to terminal
   std::cout << inputText << std::endl;
+  // Output to file (but first check file is open)
+  std::ofstream out_file{"outputFile.txt"};
+  if (!out_file.good()) {return 0;}
+  out_file << inputText << std::endl;
 
   // No requirement to return from main, but we do so for clarity
   // and for consistency with other functions
   return 0;
 }
+
+

@@ -6,12 +6,17 @@
 
 // Our project headers
 #include "TransformChar.hpp"
+#include "runCaesarCipher.hpp"
 
 // For std::isalpha and std::isupper
 #include <cctype>
 
+// To do
+// Key is currently a string, is this correct? Use function to convert to int?
+// Key or Encrypt not constant atm.
+
 // Function to parse the command line arguments
-bool processCommandLine(const std::vector<std::string>& cmdLineArgs, bool& helpRequested, bool& versionRequested, std::string& inputFile, std::string& outputFile) {
+bool processCommandLine(const std::vector<std::string>& cmdLineArgs, bool& helpRequested, bool& versionRequested, std::string& inputFile, std::string& outputFile, std::string& key, bool& encrypt) {
   // Add a typedef that assigns another name for the given type for clarity
   // Will cover typedefs more later on
   typedef std::vector<std::string>::size_type size_type;
@@ -54,6 +59,41 @@ bool processCommandLine(const std::vector<std::string>& cmdLineArgs, bool& helpR
 	++i;
       }
     }
+    else if (cmdLineArgs[i] == "--key") {
+      // Handle key
+      // Next element is the key unless --key is the last argument
+      if (i == nCmdLineArgs-1) {
+	std::cerr << "[error] --key requires a key argument" << std::endl;
+	// exit main with non-zero return to indicate failure
+	return false;
+      }
+      else {
+	// Got key, so assign value and advance past it
+	key = cmdLineArgs[i+1];
+	++i;
+      }
+    }
+    else if (cmdLineArgs[i] == "--encrypt") {
+      // Handle encrypt
+      // Next element states whether to encrypt (1) or decrypt (0)
+      if (i == nCmdLineArgs-1) {
+	std::cerr << "[error] --encrypt requires a boolean argument" << std::endl;
+	// exit main with non-zero return to indicate failure
+	return false;
+      }
+      else {
+	// Got boolean, so assign value and advance past it
+	if (cmdLineArgs[i+1] == "true") {
+	  // User wants to encrypt
+	  encrypt = true;
+	}
+	else if (cmdLineArgs[i+1] == "false") {
+	  // User wants to decrypt
+	  encrypt = false;
+	}
+	++i;
+      }
+    }    
     else {
       // Have an unknown flag to output error message and return non-zero
       // exit status to indicate failure
@@ -76,23 +116,27 @@ int main(int argc, char* argv[])
   bool versionRequested {false};
   std::string inputFile {""};
   std::string outputFile {""};
+  std::string key {""};
+  bool encrypt {true}; // Encrypt by default
 
   // Process command line arguments and if the function returns false, exit program. Note this line both runs the function and checks the output.
-  if(!processCommandLine(cmdLineArgs, helpRequested, versionRequested, inputFile, outputFile)) {return 1;}
+  if(!processCommandLine(cmdLineArgs, helpRequested, versionRequested, inputFile, outputFile, key, encrypt)) {return 1;}
 
   // Handle help, if requested
   if (helpRequested) {
     // Line splitting for readability
     std::cout
-      << "Usage: mpags-cipher [-i <file>] [-o <file>]\n\n"
-      << "Encrypts/Decrypts input alphanumeric text using classical ciphers\n\n"
+      << "Usage: mpags-cipher [-i <file>] [-o <file>] [--key <key>] [--encrypt <true or false>]\n\n"
+      << "Encrypts/Decrypts input alphanumeric text using the Caesar cipher\n\n"
       << "Available options:\n\n"
       << "  -h|--help        Print this help message and exit\n\n"
       << "  --version        Print version information\n\n"
       << "  -i FILE          Read text to be processed from FILE\n"
       << "                   Stdin will be used if not supplied\n\n"
       << "  -o FILE          Write processed text to FILE\n"
-      << "                   Stdout will be used if not supplied\n\n";
+      << "                   Stdout will be used if not supplied\n\n"
+      << "  --key KEY        Use KEY as the key in the Caesar cipher\n\n"
+      << "  --encrypt TRUE or FALSE     Enter whether to encrypt or decrypt\n\n";
     // Help requires no further action, so return from main
     // with 0 used to indicate success
     return 0;
@@ -115,13 +159,15 @@ int main(int argc, char* argv[])
   if (!in_file.good()) {
     std::cout<<"File not read. Using keyboard input instead."<<std::endl;
     while(std::cin >> inputChar) {
-      inputText += transformChar(inputChar);
+      //inputText += transformChar(inputChar);
+      runCaesarCipher(key, encrypt);
     }
   }
   else {
     std::cout << "File read correctly." << std::endl;
     while(in_file >> inputChar) {
-      inputText += transformChar(inputChar);
+      //inputText += transformChar(inputChar);
+      runCaesarCipher(key, encrypt);
     }
   }
 

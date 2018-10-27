@@ -5,6 +5,6 @@
 
 // Function to run Caesar Cipher
 //std::string runCaesarCipher(const std::string& inputText, const size_t key, const bool encrypt);
-std::string runCaesarCipher(std::string key, const bool encrypt);
+std::string runCaesarCipher(const std::string& inputText, const std::string key, const bool encrypt);
 
 #endif

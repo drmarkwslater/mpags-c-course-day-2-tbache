@@ -11,10 +11,6 @@
 // For std::isalpha and std::isupper
 #include <cctype>
 
-// To do
-// Key is currently a string, is this correct? Use function to convert to int?
-// Key or Encrypt not constant atm.
-
 // Function to parse the command line arguments
 bool processCommandLine(const std::vector<std::string>& cmdLineArgs, bool& helpRequested, bool& versionRequested, std::string& inputFile, std::string& outputFile, std::string& key, bool& encrypt) {
   // Add a typedef that assigns another name for the given type for clarity
@@ -159,46 +155,27 @@ int main(int argc, char* argv[])
   if (!in_file.good()) {
     std::cout<<"File not read. Using keyboard input instead."<<std::endl;
     while(std::cin >> inputChar) {
-      //inputText += transformChar(inputChar);
-      runCaesarCipher(key, encrypt);
+      inputText += transformChar(inputChar);
+      
     }
   }
   else {
     std::cout << "File read correctly." << std::endl;
     while(in_file >> inputChar) {
-      //inputText += transformChar(inputChar);
-      runCaesarCipher(key, encrypt);
+      inputText += transformChar(inputChar);
     }
   }
 
-  // Read in user input from stdin/file
-  //if (!inputFile.empty()) {
-  //while(std::cin >> inputChar) {
-  //  inputText += transformChar(inputChar);
-  //}
-  //}
-  //  else {
-  //while(in_file >> inputChar) {
-  //  inputText += transformChar(inputChar);
-  //}
-  //  }
+  std::string outputText {runCaesarCipher(inputText, key, encrypt)};
 
-  // Check file was read correctly
-  //std::ifstream in_file{inputFile};
-  //if (!in_file.good()) {std::cout<<"File not read."<<std::endl;return 1;}
-  
-  // Loop over each character from user input
-  // (until Return then CTRL-D (EOF) pressed)
-  //  while(std::cin >> inputChar)
-  // if (!inputFile.empty())
-  
-  
   // Output to terminal
-  std::cout << inputText << std::endl;
+  std::cout << "Your input was " << inputText << std::endl;
+  std::cout << "Your output is " << outputText <<std::endl;
+  
   // Output to file (but first check file is open)
   std::ofstream out_file{"outputFile.txt"};
   if (!out_file.good()) {return 0;}
-  out_file << inputText << std::endl;
+  out_file << outputText << std::endl;
 
   // No requirement to return from main, but we do so for clarity
   // and for consistency with other functions

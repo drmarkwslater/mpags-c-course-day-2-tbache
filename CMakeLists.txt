@@ -18,6 +18,8 @@ add_executable(mpags-cipher
   MPAGSCipher/TransformChar.hpp
   MPAGSCipher/runCaesarCipher.cpp
   MPAGSCipher/runCaesarCipher.hpp
+  MPAGSCipher/processCommandLine.cpp
+  MPAGSCipher/processCommandLine.hpp
   )
 
 # Set where CMake searches for header files

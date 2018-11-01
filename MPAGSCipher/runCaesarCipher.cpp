@@ -1,6 +1,6 @@
 // File to contain Caesar Cipher function
 
-#include <string>
+#include "runCaesarCipher.hpp"
 #include <iostream>
 #include <vector>
 #include <stdlib.h>  //strtoul()
@@ -8,10 +8,10 @@
 // Function to run the Caesar Cipher
 std::string runCaesarCipher(const std::string& inputText, const std::string key, const bool encrypt) {
   std::cout << "Your key is " << key << ". ";
-  if (encrypt == true) {
+  if (encrypt) {
     std::cout << "You want to encrypt." << std::endl;
   }
-  else if (encrypt == false) {
+  else {
     std::cout << "You want to decrypt." << std::endl;
   }
   
@@ -32,10 +32,10 @@ std::string runCaesarCipher(const std::string& inputText, const std::string key,
     unsigned long posInAlphabet = alphabet.find(inputText[i]);
         
     // Use key to encrypt or decrypt
-    if (encrypt == true) {
+    if (encrypt) {
       outputText += alphabet[(posInAlphabet + new_key)%alphabet.length()];
     }
-    else if (encrypt == false) {
+    else {
       outputText += alphabet[(posInAlphabet - (new_key - alphabet.length()))%alphabet.length()];
     }
 

@@ -1,7 +1,7 @@
 // File to contain function that processes the command lines arguments
-#include <string>
+#include "processCommandLine.hpp"
 #include <iostream>
-#include <vector>
+
 
 
 // Function to parse the command line arguments
@@ -62,6 +62,7 @@ bool processCommandLine(const std::vector<std::string>& cmdLineArgs, bool& helpR
 	++i;
       }
     }
+    // to avoid issues with, e.g. true/TRUE/True, probably best to use --encryp, --decrypt
     else if (cmdLineArgs[i] == "--encrypt") {
       // Handle encrypt
       // Next element states whether to encrypt (1) or decrypt (0)
